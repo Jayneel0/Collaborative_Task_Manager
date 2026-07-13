@@ -46,7 +46,7 @@ app/
 ## Installation
 
 ```bash
-git clone <repository-url>
+git clone git clone https://github.com/Jayneel0/Collaborative_Task_Manager.git
 
 cd Collaborative-Task-Manager
 
