@@ -10,8 +10,8 @@ router = APIRouter(prefix = "/teams/{team_id}/members")
 def add_member(team_id : int, member : schemas.TeamMemberCreate,
                current_user : models.User = Depends(get_current_user),
                db : Session = Depends(get_db)):
-    team_leaders = crud.get_leaders(db, team_id)
-    if (current_user.id not in team_leaders.user_id):
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
+    if (current_user.id not in team_leaders):
         raise HTTPException(
             status_code=403,
             detail = "Only team leaders can add members"
@@ -31,8 +31,8 @@ def update_member(team_id : int, user_id : int,
                   update : schemas.TeamMemberUpdate,
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
-    team_leaders = crud.get_leader(db, team_id)
-    if (current_user.id != team_leaders.user_id):
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
+    if (current_user.id not in team_leaders):
         raise HTTPException(
             status_code=403,
             detail = "Only team leaders can change member roles"
@@ -49,7 +49,7 @@ def remove_member(team_id : int,
                   user_id : int,
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
-    team_leaders = crud.get_leaders(db, team_id)
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
     if (current_user.id not in team_leaders):
         raise HTTPException(
             status_code=403,

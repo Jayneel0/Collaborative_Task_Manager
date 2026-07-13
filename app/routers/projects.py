@@ -10,8 +10,8 @@ router = APIRouter(prefix="/teams/{team_id}/projects")
 def create_project(team_id : int, project : schemas.ProjectCreate,
                current_user : models.User = Depends(get_current_user),
                db : Session = Depends(get_db)):
-    team_leaders = crud.get_leaders(db, team_id)
-    if (current_user.id not in team_leaders.user_id):
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
+    if (current_user.id not in team_leaders):
         raise HTTPException(
             status_code=403,
             detail = "Only team leaders can create projects"
@@ -31,8 +31,8 @@ def update_project(team_id : int, project_id : int,
                   update : schemas.ProjectUpdate,
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
-    team_leaders = crud.get_leader(db, team_id)
-    if (current_user.id != team_leaders.user_id):
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
+    if (current_user.id not in team_leaders):
         raise HTTPException(
             status_code=403,
             detail = "Only team leaders can update projects"
@@ -45,7 +45,7 @@ def delete_project(team_id : int,
                   project_id : int,
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
-    team_leaders = crud.get_leaders(db, team_id)
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
     if (current_user.id not in team_leaders):
         raise HTTPException(
             status_code=403,

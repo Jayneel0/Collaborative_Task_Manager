@@ -31,8 +31,8 @@ def update_team(team_id : int,
                 update : schemas.TeamUpdate,
                 current_user : models.User = Depends(get_current_user),
                 db : Session=Depends(get_db)):
-    team_leaders = crud.get_leaders(db, team_id)
-    if (current_user.id not in team_leaders.user_id):
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
+    if (current_user.id not in team_leaders):
         raise HTTPException(
             status_code=403,
             detail = "Only team leaders can update the team name"
@@ -43,8 +43,8 @@ def update_team(team_id : int,
 def delete_team(team_id : int,
                 current_user : models.User = Depends(get_current_user),
                 db : Session = Depends(get_db)):
-    team_leaders = crud.get_leaders(db, team_id)
-    if (current_user.id not in team_leaders.user_id):
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
+    if (current_user.id not in team_leaders):
         raise HTTPException(
             status_code=403,
             detail = "Only team leaders can delete the team"

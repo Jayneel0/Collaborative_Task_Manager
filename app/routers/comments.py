@@ -34,7 +34,7 @@ def update_comment(team_id : int, project_id : int, task_id : int, comment_id : 
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
     comment = get_comment(team_id, project_id, task_id, comment_id, db)
-    team_leaders = crud.get_leaders(db, team_id)
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
     if (current_user.id not in team_leaders and current_user.id != comment.author_id):
         raise HTTPException(
             status_code=403,
@@ -47,7 +47,7 @@ def delete_comment(team_id : int, project_id : int, task_id :int, comment_id : i
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
     comment = get_comment(team_id, project_id, task_id, comment_id, db)
-    team_leaders = crud.get_leaders(db, team_id)
+    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
     if (current_user.id not in team_leaders and current_user.id != comment.author_id):
         raise HTTPException(
             status_code=403,

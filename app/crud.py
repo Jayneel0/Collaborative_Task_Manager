@@ -131,7 +131,7 @@ def get_member(db : Session, team_id : int, user_id : int):
 
 def get_leaders(db : Session, team_id : int):
     team = get_team(db, team_id)
-    leaders = db.query(models.TeamMember.user_id).filter(models.TeamMember.team_id == team_id,
+    leaders = db.query(models.TeamMember).filter(models.TeamMember.team_id == team_id,
                                              models.TeamMember.role == models.TeamRole.LEADER).all()
     return leaders
 
