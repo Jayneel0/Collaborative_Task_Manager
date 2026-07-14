@@ -4,7 +4,7 @@ from jose import jwt, JWTError
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app import crud
+from app import crud, models
 from fastapi.security import OAuth2PasswordBearer
 
 password_hash = PasswordHash.recommended()
@@ -19,6 +19,8 @@ SECRET_KEY = "Change_this_to_a_random_secret"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+blacklisted_tokens: set[str] = set()
+
 def create_access_token(data : dict):
     to_encode = data.copy()
     expire = datetime.now(UTC) + timedelta(ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -32,6 +34,12 @@ def get_current_user(token : str = Depends(oauth2_scheme), db : Session=Depends(
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
+    
+    if token in blacklisted_tokens:
+        raise HTTPException(
+            status_code=401,
+            detail="Token has been revoked"
+        )
     user_id = payload.get("sub")
     if user_id is None:
         raise HTTPException(
@@ -42,3 +50,31 @@ def get_current_user(token : str = Depends(oauth2_scheme), db : Session=Depends(
     if user is None:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
     return user
+
+def is_owner(db : Session, team_id, current_user_id : int):
+    member = crud.get_member(db, team_id, current_user_id)
+    if (member.role == models.TeamRole.OWNER):
+        return True
+    else:
+        return False
+    
+def is_maintainer(db : Session, team_id, current_user_id : int):
+    member = crud.get_member(db, team_id, current_user_id)
+    if (member.role == models.TeamRole.MAINTAINER):
+        return True
+    else:
+        return False
+
+def is_member(db : Session, team_id, current_user_id: int):
+    member = crud.get_member(db, team_id, current_user_id)
+    if (member.role == models.TeamRole.MEMBER):
+        return True
+    else:
+        return False
+
+def is_viewer(db : Session, team_id, current_user_id : int):
+    member = crud.get_member(db, team_id, current_user_id)
+    if (member.role == models.TeamRole.VIEWER):
+        return True
+    else:
+        return False

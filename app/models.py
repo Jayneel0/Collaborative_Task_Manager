@@ -35,8 +35,10 @@ class Team(Base):
                                                     cascade = "all, delete-orphan")
 
 class TeamRole(Enum):
-    LEADER = "leader"
+    OWNER = "leader"
+    MAINTAINER = "maintainer"
     MEMBER = "member"
+    VIEWER = "viewer"
     
 class TeamMember(Base):
     __tablename__ = "team_members"    

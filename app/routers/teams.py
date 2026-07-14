@@ -2,7 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import schemas, crud, models
 from app.database import get_db
-from app.security import get_current_user
+from app.security import (get_current_user,
+                          is_owner,
+                          is_member,
+                          is_maintainer,
+                          is_viewer)
 
 router = APIRouter(prefix ="/teams")
 
@@ -13,7 +17,7 @@ def create_team(team : schemas.TeamCreate,
     new_team = crud.create_team(db, team)
     new_member = schemas.TeamMemberCreate(
         user_id=current_user.id,
-        role = models.TeamRole.Leader
+        role = models.TeamRole.OWNER
     )
     crud.add_member(db, new_team.id, new_member)
     return new_team
@@ -31,11 +35,10 @@ def update_team(team_id : int,
                 update : schemas.TeamUpdate,
                 current_user : models.User = Depends(get_current_user),
                 db : Session=Depends(get_db)):
-    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
-    if (current_user.id not in team_leaders):
+    if (not is_owner(db, team_id, current_user.id)):
         raise HTTPException(
             status_code=403,
-            detail = "Only team leaders can update the team name"
+            detail = "Only team owners can update team"
         )
     return crud.update_team(db, team_id, update)
 
@@ -44,10 +47,10 @@ def delete_team(team_id : int,
                 current_user : models.User = Depends(get_current_user),
                 db : Session = Depends(get_db)):
     team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
-    if (current_user.id not in team_leaders):
+    if (not is_owner(db, team_id, current_user.id)):
         raise HTTPException(
             status_code=403,
-            detail = "Only team leaders can delete the team"
+            detail = "Only team owners can delete team"
         )
     crud.delete_team(db, team_id)
     return {

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app import schemas, models
 from datetime import datetime, UTC
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from app.security import hash_password
 
 def create_user(db : Session, user : schemas.UserCreate):
@@ -40,6 +40,12 @@ def update_user(db : Session, user_id : int, update : schemas.UserUpdate):
     if update.name is not None :
         user.name = update.name
     if update.email is not None:
+        existing_user = db.query(models.User).filter(models.User.email == user.email).first()
+        if existing_user:
+            raise HTTPException(
+                status_code=409,
+                detail="Email already registered"
+            )
         user.email = update.email
     if update.password is not None:
         user.hashed_password = hash_password(update.password)
@@ -330,3 +336,4 @@ def delete_comment(db : Session, team_id : int, project_id : int,
     comment = get_comment(db, team_id, project_id, task_id, comment_id)
     db.delete(comment)
     db.commit()
+
