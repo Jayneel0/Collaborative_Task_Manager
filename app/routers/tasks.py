@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app import schemas, crud, models
 from app.database import get_db
@@ -28,10 +28,15 @@ def create_task(team_id : int,
 @router.get("/", response_model=list[schemas.TaskResponse])
 def get_tasks(team_id : int,
               project_id : int,
+              title : str | None=None,
+              status : str | None=None,
+              priority : str | None=None,
+              skip: int = Query(default=0, ge=0),
+              limit: int | None=None,
               current_user : models.User = Depends(get_current_user),
               db : Session = Depends(get_db)):
     crud.get_member(db, team_id, current_user.id)
-    return crud.get_tasks(db, team_id, project_id)
+    return crud.get_tasks(db, team_id, project_id, title, status, priority, skip, limit)
 
 @router.get("/{task_id}", response_model=schemas.TaskResponse)
 def get_task(team_id : int,

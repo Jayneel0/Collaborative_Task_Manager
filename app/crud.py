@@ -219,9 +219,29 @@ def get_task(db : Session, team_id : int, project_id : int, task_id : int):
         )
     return task
 
-def get_tasks(db : Session, team_id : int, project_id : int):
+def get_tasks(db : Session,
+              team_id : int,
+              project_id : int,
+              title,
+              status,
+              priority,
+              skip,
+              limit):
     get_project(db, team_id, project_id)
-    return db.query(models.Task).filter(models.Task.project_id == project_id).all()
+    query = db.query(models.Task).filter(models.Task.project_id == project_id)
+    if title:
+        query = query.filter(models.Task.title.ilike(f"%{title}%"))
+        
+    if status:
+        query = query.filter(models.Task.status == status)
+        
+    if priority:
+        query = query.filter(models.Task.priority == priority)
+    
+    if limit:
+        query = query.limit(limit)
+    
+    return query.offset(skip).all()
 
 def update_task(db : Session, team_id : int, project_id : int,
                 task_id : int, update : schemas.TaskUpdate):

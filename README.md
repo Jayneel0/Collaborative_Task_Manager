@@ -62,6 +62,9 @@ Run the server:
 ```bash
 uvicorn app.main:app --reload
 ```
+## Environment Variables
+
+Create a `.env` file using `.env.example` before running the project.
 
 API documentation:
 
@@ -71,6 +74,11 @@ Interactive API documentation is available after starting the server:
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 ```
+## API Version
+
+Current API version:
+
+/api/v1
 
 ## Database Schema
 
