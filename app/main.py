@@ -23,7 +23,7 @@ from contextlib import asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     yield
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(users.router, prefix = "/api/v1")
 app.include_router(teams.router, prefix = "/api/v1")
@@ -33,7 +33,6 @@ app.include_router(tasks.router, prefix = "/api/v1")
 app.include_router(task_assignments.router, prefix = "/api/v1")
 app.include_router(comments.router, prefix = "/api/v1")
 
-app = FastAPI(lifespan=lifespan)
 @app.get("/")
 def root():
     return{
