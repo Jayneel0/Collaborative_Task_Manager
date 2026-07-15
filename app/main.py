@@ -17,6 +17,7 @@ from sqlalchemy import text
 from datetime import datetime, UTC
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from contextlib import asynccontextmanager
 
 app = FastAPI()
 
@@ -28,7 +29,12 @@ app.include_router(tasks.router, prefix = "/api/v1")
 app.include_router(task_assignments.router, prefix = "/api/v1")
 app.include_router(comments.router, prefix = "/api/v1")
 
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
+
+app = FastAPI(lifespan=lifespan)
 @app.get("/")
 def root():
     return{

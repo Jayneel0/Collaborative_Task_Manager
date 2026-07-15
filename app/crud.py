@@ -364,3 +364,8 @@ def delete_comment(db : Session, team_id : int, project_id : int,
     db.delete(comment)
     db.commit()
 
+def get_owners(db: Session, team_id: int):
+    return db.query(models.TeamMember).filter(
+        models.TeamMember.team_id == team_id,
+        models.TeamMember.role == models.TeamRole.OWNER
+    ).all()

@@ -17,7 +17,7 @@ services:
   backend:
     build: .
     container_name: collaborative-task-manager
-
+    
     env_file:
       - .env
 

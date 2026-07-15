@@ -48,6 +48,14 @@ def update_member(team_id : int, user_id : int,
             status_code=403,
             detail = "Only team owners can change member roles"
         )
+    owners = crud.get_owners(db, team_id)
+    if (len(owners) == 1 and
+        owners[0].user_id == user_id and
+        update.role != models.TeamRole.OWNER):
+        raise HTTPException(
+            status_code=409,
+            detail="A team must have at least one owner."
+        )
     return crud.update_member(db, team_id, user_id, update)
 
 @router.delete("/{user_id}")
@@ -59,6 +67,13 @@ def remove_member(team_id : int,
         raise HTTPException(
             status_code=403,
             detail = "Only team owners can delete members"
+        )
+    owners = crud.get_owners(db, team_id)
+    if (len(owners) == 1 and
+        owners[0].user_id == user_id):
+        raise HTTPException(
+            status_code=409,
+            detail="A team must have at least one owner."
         )
     crud.remove_member(db, team_id, user_id)
     return {
