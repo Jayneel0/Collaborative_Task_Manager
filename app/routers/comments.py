@@ -32,7 +32,7 @@ def update_comment(team_id : int, project_id : int, task_id : int, comment_id : 
                   update : schemas.CommentUpdate,
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
-    comment = crud.get_comment(team_id, project_id, task_id, comment_id, db)
+    comment = crud.get_comment(db, team_id, project_id, task_id, comment_id)
     member = crud.get_member(db, team_id, current_user.id)
     if (member.user_id != comment.author_id):
         raise HTTPException(
@@ -45,7 +45,7 @@ def update_comment(team_id : int, project_id : int, task_id : int, comment_id : 
 def delete_comment(team_id : int, project_id : int, task_id :int, comment_id : int,
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
-    comment = crud.get_comment(team_id, project_id, task_id, comment_id, db)
+    comment = crud.get_comment(db, team_id, project_id, task_id, comment_id)
     member = crud.get_member(db, team_id, current_user.id)
     if (member.user_id != comment.author_id):
         raise HTTPException(
@@ -54,5 +54,5 @@ def delete_comment(team_id : int, project_id : int, task_id :int, comment_id : i
         )
     crud.delete_comment(db, team_id, project_id, task_id, comment_id)
     return {
-        "message" : "Comment Deleted Succesfully"
+        "message" : "Comment Deleted Successfully"
     }

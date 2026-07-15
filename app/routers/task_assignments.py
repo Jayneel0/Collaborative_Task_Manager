@@ -40,13 +40,13 @@ def get_assignment(team_id : int, project_id : int, user_id : int, task_id : int
 def remove_assignment(team_id : int, project_id : int, task_id : int,
                       user_id : int,current_user : models.User = Depends(get_current_user),
                       db : Session = Depends(get_db)):
-    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
-    if (current_user.id not in team_leaders):
+    if (not is_owner(db, team_id, current_user.id) and
+        not is_maintainer(db, team_id, current_user.id)):
         raise HTTPException(
             status_code=403,
-            detail = "Only team leaders can remove assignments"
+            detail = "Only team owners or maintainers can remove assignments"
         )
     crud.remove_assignment(db, team_id, project_id, task_id, user_id)
     return {
-        "message" : "Assignment removed Succesfully"
+        "message" : "Assignment removed Successfully"
     }

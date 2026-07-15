@@ -1,16 +1,19 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime
 from app.models import TeamRole, TaskStatus, TaskPriority
 
 class UserCreate(BaseModel):
-    name : str
-    email : str
-    password : str
+    name: str = Field(
+    min_length=2,
+    max_length=50
+    )
+    email : EmailStr
+    password: str = Field(min_length=8)
     
 class UserResponse(BaseModel):
     id : int
     name : str
-    email : str
+    email : EmailStr
     created_at : datetime
     model_config = {
         "from_attributes" : True
@@ -18,11 +21,11 @@ class UserResponse(BaseModel):
     
 class UserUpdate(BaseModel):
     name : str | None = None
-    email : str | None = None
+    email : EmailStr | None = None
     password : str | None = None
     
 class UserLogin(BaseModel):
-    email : str
+    email : EmailStr
     password : str
     
 class Token(BaseModel):
@@ -30,10 +33,13 @@ class Token(BaseModel):
     token_type : str
     
 class TeamCreate(BaseModel):
-    name : str  
+    name: str = Field(
+    min_length=2,
+    max_length=100
+    )  
     
 class TeamResponse(BaseModel):
-    team_id : int
+    id : int
     name : str
     created_at : datetime
     model_config ={
@@ -75,7 +81,10 @@ class ProjectUpdate(BaseModel):
     name : str | None=None
     
 class TaskCreate(BaseModel):
-    title : str
+    title: str = Field(
+    min_length=1,
+    max_length=200
+    )
     description : str
     priority : TaskPriority
     due_date : datetime
@@ -113,7 +122,10 @@ class TaskAssignmentResponse(BaseModel):
     }
     
 class CommentCreate(BaseModel):
-    content : str
+    content: str = Field(
+    min_length=1,
+    max_length=1000
+)
     
 class CommentUpdate(BaseModel):
     content : str | None = None
@@ -127,8 +139,3 @@ class CommentResponse(BaseModel):
     model_config = {
         "from_attributes" : True
     }
-    
-    
-
-    
-    

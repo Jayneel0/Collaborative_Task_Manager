@@ -19,7 +19,7 @@ A backend REST API for collaborative task management built using FastAPI and SQL
 - Python
 - FastAPI
 - SQLAlchemy
-- SQLite
+- PostgreSQL
 - Pydantic
 - JWT Authentication
 - pwdlib (Argon2)
@@ -62,9 +62,18 @@ Run the server:
 ```bash
 uvicorn app.main:app --reload
 ```
+
+## Docker
+
+docker compose up --build
+
 ## Environment Variables
 
 Create a `.env` file using `.env.example` before running the project.
+DATABASE_URL
+SECRET_KEY
+ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES
 
 API documentation:
 
@@ -136,54 +145,54 @@ The API supports role-based authorization.
 ## API Endpoints
 
 ### Users
-- POST /users
-- POST /users/login
-- POST /users/logout
-- GET /users/me
-- GET /users/{user_id}
-- PATCH /users/{user_id}
-- DELETE /users/{user_id}
+- POST /api/v1/users
+- POST /api/v1/users/login
+- POST /api/v1/users/logout
+- GET /api/v1/users/me
+- GET /api/v1/users/{user_id}
+- PATCH /api/v1/users/{user_id}
+- DELETE /api/v1/users/{user_id}
 
 ### Teams
-- POST /teams
-- GET /teams
-- GET /teams/{team_id}
-- PATCH /teams/{team_id}
-- DELETE /teams/{team_id}
+- POST /api/v1/teams
+- GET /api/v1/teams
+- GET /api/v1/teams/{team_id}
+- PATCH /api/v1/teams/{team_id}
+- DELETE /api/v1/teams/{team_id}
 
 ### Team Members
-- POST /teams/{team_id}/members
-- GET /teams/{team_id}/members
-- GET /teams/{team_id}/members/{user_id}
-- PATCH /teams/{team_id}/members/{user_id}
-- DELETE /teams/{team_id}/members/{user_id}
+- POST /api/v1/teams/{team_id}/members
+- GET /api/v1/teams/{team_id}/members
+- GET /api/v1/teams/{team_id}/members/{user_id}
+- PATCH /api/v1/teams/{team_id}/members/{user_id}
+- DELETE /api/v1/teams/{team_id}/members/{user_id}
 
 ### Projects
-- POST /teams/{team_id}/projects
-- GET /teams/{team_id}/projects
-- GET /teams/{team_id}/projects/{project_id}
-- PATCH /teams/{team_id}/projects/{project_id}
-- DELETE /teams/{team_id}/projects/{project_id}
+- POST /api/v1/teams/{team_id}/projects
+- GET /api/v1/teams/{team_id}/projects
+- GET /api/v1/teams/{team_id}/projects/{project_id}
+- PATCH /api/v1/teams/{team_id}/projects/{project_id}
+- DELETE /api/v1/teams/{team_id}/projects/{project_id}
 
 ### Tasks
-- POST /teams/{team_id}/projects/{project_id}/tasks
-- GET /teams/{team_id}/projects/{project_id}/tasks
-- GET /teams/{team_id}/projects/{project_id}/tasks/{task_id}
-- PATCH /teams/{team_id}/projects/{project_id}/tasks/{task_id}
-- DELETE /teams/{team_id}/projects/{project_id}/tasks/{task_id}
+- POST /api/v1/teams/{team_id}/projects/{project_id}/tasks
+- GET /api/v1/teams/{team_id}/projects/{project_id}/tasks
+- GET /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}
+- PATCH /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}
+- DELETE /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}
 
 ### Task Assignments
-- POST /teams/{team_id}/projects/{project_id}/tasks/{task_id}/assignments
-- GET /teams/{team_id}/projects/{project_id}/tasks/{task_id}/assignments
-- GET /teams/{team_id}/projects/{project_id}/tasks/{task_id}/assignments/{user_id}
-- DELETE /teams/{team_id}/projects/{project_id}/tasks/{task_id}/assignments/{user_id}
+- POST /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/assignments
+- GET /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/assignments
+- GET /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/assignments/{user_id}
+- DELETE /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/assignments/{user_id}
 
 ### Comments
-- POST /teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments
-- GET /teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments
-- GET /teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}
-- PATCH /teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}
-- DELETE /teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}
+- POST /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments
+- GET /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments
+- GET /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}
+- PATCH /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}
+- DELETE /api/v1/teams/{team_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}
 
 ## Authentication
 
@@ -205,9 +214,26 @@ After logging in, include the token in the Authorization header:
 
 Authorization: Bearer <access_token>
 
+## Deployment
+
+- Docker
+- Docker Compose
+- NGINX Reverse Proxy
+- PostgreSQL
+- HTTPS (Let's Encrypt)
+- Render
+
 ## Database
 
-SQLite is used as the database.
+PostgreSQL is used as the database.
+
+## Live API
+
+https://taskeasy.duckdns.org
+
+Swagger:
+
+https://taskeasy.duckdns.org/docs
 
 ## Future Improvements
 

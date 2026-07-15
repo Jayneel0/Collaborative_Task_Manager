@@ -46,7 +46,6 @@ def update_team(team_id : int,
 def delete_team(team_id : int,
                 current_user : models.User = Depends(get_current_user),
                 db : Session = Depends(get_db)):
-    team_leaders = [leader.user_id for leader in crud.get_leaders(db, team_id)]
     if (not is_owner(db, team_id, current_user.id)):
         raise HTTPException(
             status_code=403,

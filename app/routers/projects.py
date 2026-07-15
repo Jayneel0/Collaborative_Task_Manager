@@ -14,11 +14,11 @@ router = APIRouter(prefix="/teams/{team_id}/projects")
 def create_project(team_id : int, project : schemas.ProjectCreate,
                current_user : models.User = Depends(get_current_user),
                db : Session = Depends(get_db)):
-    if (not is_owner(db, team_id, current_user.id) or
+    if (not is_owner(db, team_id, current_user.id) and
         not is_maintainer(db, team_id, current_user.id)):
         raise HTTPException(
             status_code=403,
-            detail = "Only team owners and maintainers can create projects"
+            detail = "Only team owners or maintainers can create projects"
         )
     return crud.create_project(db, team_id, project)
 
@@ -39,11 +39,11 @@ def update_project(team_id : int, project_id : int,
                   update : schemas.ProjectUpdate,
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
-    if (not is_owner(db, team_id, current_user.id) or
+    if (not is_owner(db, team_id, current_user.id) and
         not is_maintainer(db, team_id, current_user.id)):
         raise HTTPException(
             status_code=403,
-            detail = "Only team owners and maintainers can update projects"
+            detail = "Only team owners or maintainers can update projects"
         )
     return crud.update_project(db, team_id, project_id, update)
 
@@ -52,11 +52,11 @@ def delete_project(team_id : int,
                   project_id : int,
                   current_user : models.User = Depends(get_current_user),
                   db : Session = Depends(get_db)):
-    if (not is_owner(db, team_id, current_user.id) or
+    if (not is_owner(db, team_id, current_user.id) and
         not is_maintainer(db, team_id, current_user.id)):
         raise HTTPException(
             status_code=403,
-            detail = "Only team owners and maintainers can delete projects"
+            detail = "Only team owners or maintainers can delete projects"
         )
     crud.delete_project(db, team_id, project_id)
     return {

@@ -13,7 +13,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String)
     email : Mapped[str] = mapped_column(String, unique=True)
     hashed_password : Mapped[str] = mapped_column(String)
-    created_at : Mapped[datetime] = mapped_column(DateTime)
+    created_at : Mapped[datetime] = mapped_column(DateTime, default=lambda : datetime.now(UTC))
     
     memberships : Mapped[list["TeamMember"]] = relationship(back_populates="user",
                                                             cascade="all, delete-orphan")
@@ -35,7 +35,7 @@ class Team(Base):
                                                     cascade = "all, delete-orphan")
 
 class TeamRole(Enum):
-    OWNER = "leader"
+    OWNER = "owner"
     MAINTAINER = "maintainer"
     MEMBER = "member"
     VIEWER = "viewer"

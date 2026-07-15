@@ -40,7 +40,10 @@ def update_user(db : Session, user_id : int, update : schemas.UserUpdate):
     if update.name is not None :
         user.name = update.name
     if update.email is not None:
-        existing_user = db.query(models.User).filter(models.User.email == user.email).first()
+        existing_user = db.query(models.User).filter(
+        models.User.email == update.email,
+        models.User.id != user_id
+        ).first()
         if existing_user:
             raise HTTPException(
                 status_code=409,
@@ -90,7 +93,17 @@ def get_teams(db : Session):
 
 def update_team(db : Session, team_id : int, update : schemas.TeamUpdate):
     team = get_team(db, team_id)
-    team.name = update.name
+    if update.name is not None:
+        existing_team = db.query(models.Team).filter(
+        models.Team.name == update.name,
+        models.Team.id != team_id
+        ).first()
+        if existing_team:
+            raise HTTPException(
+                status_code=409,
+                detail="Team already exists"
+            )
+        team.name = update.name
     db.commit()
     db.refresh(team)
     return team
@@ -134,12 +147,6 @@ def get_member(db : Session, team_id : int, user_id : int):
             detail="Team does not have this member"
         )
     return member
-
-def get_leaders(db : Session, team_id : int):
-    team = get_team(db, team_id)
-    leaders = db.query(models.TeamMember).filter(models.TeamMember.team_id == team_id,
-                                             models.TeamMember.role == models.TeamRole.LEADER).all()
-    return leaders
 
 def remove_member(db : Session, team_id : int, user_id : int):
     team_member = get_member(db, team_id, user_id)
@@ -222,7 +229,7 @@ def get_task(db : Session, team_id : int, project_id : int, task_id : int):
 def get_tasks(db : Session,
               team_id : int,
               project_id : int,
-              title,
+              title, 
               status,
               priority,
               skip,
@@ -238,7 +245,7 @@ def get_tasks(db : Session,
     if priority:
         query = query.filter(models.Task.priority == priority)
     
-    if limit:
+    if limit is not None:
         query = query.limit(limit)
     
     return query.offset(skip).all()

@@ -31,7 +31,7 @@ def create_access_token(data : dict):
     to_encode["exp"] = expire
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "/api/v1/users/login")
 
 def get_current_user(token : str = Depends(oauth2_scheme), db : Session=Depends(get_db)):
     try :

@@ -29,8 +29,8 @@ def create_task(team_id : int,
 def get_tasks(team_id : int,
               project_id : int,
               title : str | None=None,
-              status : str | None=None,
-              priority : str | None=None,
+              status : models.TaskStatus | None=None,
+              priority : models.TaskPriority | None=None,
               skip: int = Query(default=0, ge=0),
               limit: int | None=None,
               current_user : models.User = Depends(get_current_user),
@@ -59,7 +59,7 @@ def update_task(team_id : int,
         not is_member(db, team_id, current_user.id)):
         raise HTTPException(
             status_code=403,
-            detail = "Only team owners, maintainers or members can create tasks"
+            detail = "Only team owners, maintainers or members can update tasks"
         )
     if (is_member(db, team_id, current_user.id)):
         crud.get_assignment(db, team_id, project_id, task_id, current_user.id)

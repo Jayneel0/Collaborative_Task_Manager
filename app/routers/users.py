@@ -71,7 +71,8 @@ def login(form_data : OAuth2PasswordRequestForm=Depends(),
     }
     
 @router.post("/logout")
-def logout(token: str = Depends(oauth2_scheme),):
+def logout(current_user: models.User = Depends(get_current_user),
+           token: str = Depends(oauth2_scheme),):
     blacklisted_tokens.add(token)
     return {
         "message": "Logged out successfully"

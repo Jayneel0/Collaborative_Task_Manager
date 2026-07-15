@@ -27,6 +27,7 @@ def add_member(team_id : int,
 def get_members(team_id : int,
                 current_user : models.User = Depends(get_current_user),
                 db : Session = Depends(get_db)):
+    crud.get_member(db, team_id, current_user.id)
     return crud.get_members(db, team_id)
 
 @router.get("/{user_id}", response_model=schemas.TeamMemberResponse)
@@ -34,6 +35,7 @@ def get_member(team_id : int,
                user_id : int,
                current_user : models.User = Depends(get_current_user),
                db : Session = Depends(get_db)):
+    crud.get_member(db, team_id, current_user.id)
     return crud.get_member(db, team_id, user_id)
 
 @router.patch("/{user_id}", response_model = schemas.TeamMemberResponse)
@@ -46,11 +48,6 @@ def update_member(team_id : int, user_id : int,
             status_code=403,
             detail = "Only team owners can change member roles"
         )
-    # if (len(team_leaders) == 1 and user_id == current_user.id and update.role == models.TeamRole.MEMBER):
-    #     raise HTTPException(
-    #         status_code=409,
-    #         detail = "A team cannot have zero leaders"
-    #     )
     return crud.update_member(db, team_id, user_id, update)
 
 @router.delete("/{user_id}")
@@ -63,11 +60,6 @@ def remove_member(team_id : int,
             status_code=403,
             detail = "Only team owners can delete members"
         )
-    # if (len(team_leaders) == 1 and user_id == team_leaders[0]):
-    #     raise HTTPException(
-    #         status_code=409,
-    #         detail = "A team cannot have zero leaders"
-    #     )
     crud.remove_member(db, team_id, user_id)
     return {
         "message" : "Member Removed Succesfully"
